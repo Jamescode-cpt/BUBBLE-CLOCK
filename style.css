@@ -1,64 +1,974 @@
+/* ============================================
+   HOLOGRAPHIC GLASSMORPHIC DASHBOARD
+   A futuristic, cyberpunk-inspired UI
+   ============================================ */
 
-body {
-  background: radial-gradient(circle at center, #0a0a1a, #000);
-  margin: 0;
-  font-family: 'Courier New', monospace;
-  color: #00ffe5;
-  text-align: center;
-  padding: 2rem;
+:root {
+  --primary: #00ffe5;
+  --primary-rgb: 0, 255, 229;
+  --secondary: #ff00cc;
+  --accent: #ff0000;
+  --bg-dark: #0a0a1a;
+  --bg-darker: #000;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.6);
 }
 
-h1 {
-  text-shadow: 0 0 10px #00ffe5;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   BACKGROUND & OVERLAY EFFECTS
+   ============================================ */
+
+body {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg-dark);
+}
+
+#bg-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, var(--bg-dark), var(--bg-darker));
+  z-index: -2;
+  transition: all 0.5s ease;
+}
+
+#hologram-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(var(--primary-rgb), 0.03) 2px,
+      rgba(var(--primary-rgb), 0.03) 4px
+    );
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100px; }
+}
+
+/* Hologram flicker effect */
+@keyframes hologram-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  97% { opacity: 0.9; }
+  98% { opacity: 1; }
+}
+
+/* ============================================
+   GLASSMORPHIC PANELS
+   ============================================ */
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 30px rgba(var(--primary-rgb), 0.05),
+    0 0 20px rgba(var(--primary-rgb), 0.1);
+  animation: hologram-flicker 10s infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--primary-rgb), 0.1),
+    transparent
+  );
+  animation: glass-shine 6s ease-in-out infinite;
+}
+
+@keyframes glass-shine {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.glass-btn {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--primary);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.glass-btn:hover {
+  background: rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.4);
+  transform: scale(1.05);
+}
+
+.glass-btn-sm {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--primary);
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.glass-btn-sm:hover {
+  background: rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.3);
+}
+
+/* ============================================
+   SETTINGS PANEL
+   ============================================ */
+
+#settings-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#settings-toggle i {
+  transition: transform 0.5s ease;
+}
+
+#settings-toggle:hover i {
+  transform: rotate(90deg);
+}
+
+#settings-panel {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 280px;
+  padding: 20px;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+#settings-panel.hidden {
+  opacity: 0;
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+#settings-panel h3 {
+  color: var(--primary);
+  margin: 15px 0 10px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+#settings-panel h3:first-child {
+  margin-top: 0;
+}
+
+#bg-options, #color-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.bg-option, .color-option {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.bg-option:hover, .color-option:hover {
+  transform: scale(1.1);
+  border-color: var(--primary);
+}
+
+.bg-option.active, .color-option.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5);
+}
+
+.custom-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--glass-bg);
+  border: 1px dashed var(--glass-border);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.3s ease;
+}
+
+.custom-upload:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.custom-upload input {
+  display: none;
+}
+
+/* ============================================
+   DASHBOARD GRID
+   ============================================ */
+
+#dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.widget {
+  padding: 20px;
+  min-height: 200px;
+}
+
+.widget h3 {
+  color: var(--primary);
+  margin-bottom: 15px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
+}
+
+/* ============================================
+   CLOCK WIDGET
+   ============================================ */
+
+.clock-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  grid-row: span 2;
 }
 
 #clock {
   position: relative;
-  width: 240px;
-  height: 240px;
-  margin: 2rem auto;
-  border: 8px solid #00ffe5;
+  width: 220px;
+  height: 220px;
+  margin: 10px auto;
+}
+
+.clock-face {
+  width: 100%;
+  height: 100%;
+  border: 4px solid var(--primary);
   border-radius: 50%;
-  box-shadow: 0 0 30px #00ffe5aa, inset 0 0 20px #00ffe5aa;
-  background: #000;
+  position: relative;
+  box-shadow:
+    0 0 40px rgba(var(--primary-rgb), 0.3),
+    inset 0 0 40px rgba(var(--primary-rgb), 0.1),
+    0 0 0 8px rgba(var(--primary-rgb), 0.1);
+  background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.05), transparent);
+}
+
+/* Hour markers */
+.hour-markers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.hour-marker {
+  position: absolute;
+  width: 3px;
+  height: 12px;
+  background: var(--primary);
+  left: 50%;
+  top: 8px;
+  transform-origin: center 102px;
+  border-radius: 2px;
+  box-shadow: 0 0 5px var(--primary);
+}
+
+.hour-marker.major {
+  height: 16px;
+  width: 4px;
 }
 
 .hand {
   position: absolute;
-  width: 50%;
-  height: 4px;
-  background: #00ffe5;
-  top: 50%;
+  bottom: 50%;
   left: 50%;
-  transform-origin: left center;
-  transform: rotate(0deg);
+  transform-origin: bottom center;
   border-radius: 4px;
+  transition: transform 0.1s cubic-bezier(0.4, 2.3, 0.3, 1);
 }
 
-.hour {
-  width: 30%;
-  height: 6px;
-  background: #ff00cc;
+.hand.hour {
+  width: 6px;
+  height: 60px;
+  background: linear-gradient(to top, var(--secondary), rgba(255, 0, 204, 0.5));
+  margin-left: -3px;
+  box-shadow: 0 0 15px var(--secondary);
+  z-index: 3;
 }
 
-.minute {
-  width: 45%;
+.hand.minute {
+  width: 4px;
+  height: 85px;
+  background: linear-gradient(to top, var(--primary), rgba(var(--primary-rgb), 0.5));
+  margin-left: -2px;
+  box-shadow: 0 0 15px var(--primary);
+  z-index: 2;
 }
 
-.second {
-  background: #ff0000;
-  height: 2px;
+.hand.second {
+  width: 2px;
+  height: 95px;
+  background: linear-gradient(to top, var(--accent), rgba(255, 0, 0, 0.3));
+  margin-left: -1px;
+  box-shadow: 0 0 10px var(--accent);
+  z-index: 4;
 }
 
 .center-dot {
-  width: 12px;
-  height: 12px;
-  background: #00ffe5;
+  width: 16px;
+  height: 16px;
+  background: var(--primary);
   border-radius: 50%;
   position: absolute;
   top: 50%;
   left: 50%;
-  margin-left: -6px;
-  margin-top: -6px;
-  box-shadow: 0 0 10px #00ffe5;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px var(--primary);
+  z-index: 5;
 }
+
+#digital-time {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#time-display {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 300;
+  font-family: 'Courier New', monospace;
+  color: var(--primary);
+  text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.8);
+  letter-spacing: 4px;
+}
+
+#date-display {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+#timezone-selector {
+  margin-top: 15px;
+}
+
+#timezone {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--primary);
+  padding: 8px 15px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+#timezone option {
+  background: var(--bg-dark);
+  color: var(--text);
+}
+
+/* ============================================
+   WEATHER WIDGET
+   ============================================ */
+
+.weather-widget {
+  position: relative;
+}
+
+#weather-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+#weather-header h3 {
+  margin: 0;
+}
+
+.weather-icon {
+  font-size: 2rem;
+  color: var(--primary);
+  text-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5);
+}
+
+#weather-content {
+  text-align: center;
+  padding: 10px 0;
+}
+
+#weather-temp {
+  font-size: 3rem;
+  font-weight: 200;
+  color: var(--text);
+  text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3);
+}
+
+#weather-desc {
+  font-size: 1rem;
+  color: var(--text-dim);
+  text-transform: capitalize;
+  margin: 5px 0 15px;
+}
+
+#weather-details {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 0;
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+#weather-details div {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+#weather-details i {
+  color: var(--primary);
+  margin-right: 5px;
+}
+
+#weather-input {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+#city-input {
+  flex: 1;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+#city-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+}
+
+#city-input::placeholder {
+  color: var(--text-dim);
+}
+
+#weather-forecast {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 5px;
+}
+
+.forecast-day {
+  text-align: center;
+  padding: 10px 5px;
+  background: var(--glass-bg);
+  border-radius: 10px;
+  flex: 1;
+}
+
+.forecast-day .day {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.forecast-day .temp {
+  font-size: 1rem;
+  color: var(--text);
+  margin: 5px 0;
+}
+
+.forecast-day i {
+  color: var(--primary);
+}
+
+/* ============================================
+   CALENDAR WIDGET
+   ============================================ */
+
+.calendar-widget {
+  grid-row: span 2;
+}
+
+#calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+#calendar-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+#calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+#calendar-weekdays span {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  padding: 5px;
+}
+
+#calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.calendar-day:hover {
+  background: rgba(var(--primary-rgb), 0.2);
+}
+
+.calendar-day.other-month {
+  color: var(--text-dim);
+  opacity: 0.4;
+}
+
+.calendar-day.today {
+  background: rgba(var(--primary-rgb), 0.3);
+  box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.4);
+  font-weight: bold;
+}
+
+.calendar-day.selected {
+  background: var(--primary);
+  color: var(--bg-dark);
+}
+
+.calendar-day.has-reminder::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  background: var(--secondary);
+  border-radius: 50%;
+}
+
+/* ============================================
+   REMINDERS WIDGET
+   ============================================ */
+
+#reminders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+#reminders-header h3 {
+  margin: 0;
+}
+
+#reminder-form {
+  background: var(--glass-bg);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+#reminder-form.hidden {
+  display: none;
+}
+
+#reminder-form input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+#reminder-form input:focus {
+  border-color: var(--primary);
+}
+
+#reminder-form-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+#reminders-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.reminder-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--glass-bg);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--primary);
+  transition: all 0.3s ease;
+}
+
+.reminder-item:hover {
+  background: rgba(var(--primary-rgb), 0.1);
+}
+
+.reminder-item.expired {
+  border-left-color: var(--accent);
+  opacity: 0.6;
+}
+
+.reminder-item .reminder-content {
+  flex: 1;
+}
+
+.reminder-item .reminder-text {
+  font-size: 0.95rem;
+  margin-bottom: 3px;
+}
+
+.reminder-item .reminder-time {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.reminder-item .delete-reminder {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.reminder-item .delete-reminder:hover {
+  color: var(--accent);
+}
+
+/* ============================================
+   NOTES WIDGET
+   ============================================ */
+
+.notes-widget {
+  display: flex;
+  flex-direction: column;
+}
+
+#quick-notes {
+  flex: 1;
+  min-height: 150px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 15px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+}
+
+#quick-notes:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.2);
+}
+
+#quick-notes::placeholder {
+  color: var(--text-dim);
+}
+
+/* ============================================
+   STOPWATCH WIDGET
+   ============================================ */
+
+#stopwatch-display {
+  font-size: 2rem;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  color: var(--primary);
+  text-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5);
+  margin: 20px 0;
+  letter-spacing: 2px;
+}
+
+#stopwatch-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+#lap-times {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.lap-time {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--glass-bg);
+  border-radius: 8px;
+  margin-bottom: 5px;
+  font-size: 0.85rem;
+}
+
+.lap-time .lap-number {
+  color: var(--primary);
+}
+
+/* ============================================
+   WORLD CLOCKS WIDGET
+   ============================================ */
+
+#world-clocks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.world-clock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: var(--glass-bg);
+  border-radius: 10px;
+  border-left: 3px solid var(--primary);
+}
+
+.wc-city {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.wc-time {
+  font-size: 1.2rem;
+  font-family: 'Courier New', monospace;
+  color: var(--primary);
+  text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--primary);
+  border-radius: 12px;
+  padding: 15px 30px;
+  color: var(--primary);
+  font-size: 0.95rem;
+  box-shadow: 0 0 30px rgba(var(--primary-rgb), 0.4);
+  z-index: 2000;
+  transition: all 0.3s ease;
+}
+
+#toast.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+  pointer-events: none;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--primary-rgb), 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--primary-rgb), 0.5);
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.hidden {
+  display: none !important;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  #dashboard {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .clock-widget {
+    grid-row: span 1;
+  }
+
+  .calendar-widget {
+    grid-row: span 1;
+  }
+
+  #settings-panel {
+    width: calc(100% - 40px);
+    right: 20px;
+    left: 20px;
+  }
+
+  #time-display {
+    font-size: 2rem;
+  }
+
+  #clock {
+    width: 180px;
+    height: 180px;
+  }
+
+  .hand.hour { height: 50px; }
+  .hand.minute { height: 70px; }
+  .hand.second { height: 80px; }
+}
+
+@media (max-width: 480px) {
+  #bg-options, #color-options {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  #weather-details {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(var(--primary-rgb), 0.6);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Apply subtle animation to widgets */
+.widget {
+  animation: hologram-flicker 15s infinite;
+}
+
+.widget:nth-child(2) { animation-delay: -2s; }
+.widget:nth-child(3) { animation-delay: -4s; }
+.widget:nth-child(4) { animation-delay: -6s; }
+.widget:nth-child(5) { animation-delay: -8s; }
+.widget:nth-child(6) { animation-delay: -10s; }
+.widget:nth-child(7) { animation-delay: -12s; }

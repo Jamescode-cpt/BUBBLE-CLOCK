@@ -1,20 +1,187 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🕰️ Bubbly Clock Demo</title>
+  <title>Holographic Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-  <h1>🧼 Bubbly Analog Clock</h1>
-  <div id="clock">
-    <div class="hand hour" id="hourHand"></div>
-    <div class="hand minute" id="minuteHand"></div>
-    <div class="hand second" id="secondHand"></div>
-    <div class="center-dot"></div>
+  <!-- Background Layer -->
+  <div id="bg-layer"></div>
+  <div id="hologram-overlay"></div>
+
+  <!-- Settings Panel Toggle -->
+  <button id="settings-toggle" class="glass-btn" title="Settings">
+    <i class="fas fa-cog"></i>
+  </button>
+
+  <!-- Settings Panel -->
+  <div id="settings-panel" class="glass-panel hidden">
+    <h3><i class="fas fa-palette"></i> Background</h3>
+    <div id="bg-options">
+      <div class="bg-option" data-bg="gradient1" style="background: linear-gradient(135deg, #0a0a1a, #1a0a2e);"></div>
+      <div class="bg-option" data-bg="gradient2" style="background: linear-gradient(135deg, #0d1b2a, #1b263b);"></div>
+      <div class="bg-option" data-bg="gradient3" style="background: linear-gradient(135deg, #240046, #3c096c);"></div>
+      <div class="bg-option" data-bg="gradient4" style="background: linear-gradient(135deg, #03071e, #370617);"></div>
+      <div class="bg-option" data-bg="gradient5" style="background: linear-gradient(135deg, #001219, #005f73);"></div>
+      <div class="bg-option" data-bg="image1" style="background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=100') center/cover;"></div>
+      <div class="bg-option" data-bg="image2" style="background: url('https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=100') center/cover;"></div>
+      <div class="bg-option" data-bg="image3" style="background: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=100') center/cover;"></div>
+    </div>
+    <label class="custom-upload">
+      <i class="fas fa-upload"></i> Upload Image
+      <input type="file" id="custom-bg" accept="image/*" />
+    </label>
+
+    <h3><i class="fas fa-adjust"></i> Theme Color</h3>
+    <div id="color-options">
+      <div class="color-option" data-color="#00ffe5" style="background: #00ffe5;"></div>
+      <div class="color-option" data-color="#ff00cc" style="background: #ff00cc;"></div>
+      <div class="color-option" data-color="#00ff88" style="background: #00ff88;"></div>
+      <div class="color-option" data-color="#ffaa00" style="background: #ffaa00;"></div>
+      <div class="color-option" data-color="#ff4444" style="background: #ff4444;"></div>
+      <div class="color-option" data-color="#aa88ff" style="background: #aa88ff;"></div>
+    </div>
   </div>
+
+  <!-- Main Dashboard Grid -->
+  <div id="dashboard">
+    <!-- Clock Widget -->
+    <div class="widget clock-widget glass-panel">
+      <div id="clock">
+        <div class="clock-face">
+          <div class="hour-markers"></div>
+          <div class="hand hour" id="hourHand"></div>
+          <div class="hand minute" id="minuteHand"></div>
+          <div class="hand second" id="secondHand"></div>
+          <div class="center-dot"></div>
+        </div>
+      </div>
+      <div id="digital-time">
+        <span id="time-display">00:00:00</span>
+        <span id="date-display">Loading...</span>
+      </div>
+      <div id="timezone-selector">
+        <select id="timezone">
+          <option value="local">Local Time</option>
+          <option value="UTC">UTC / GMT</option>
+          <option value="America/New_York">New York</option>
+          <option value="America/Los_Angeles">Los Angeles</option>
+          <option value="Europe/London">London</option>
+          <option value="Europe/Paris">Paris</option>
+          <option value="Asia/Tokyo">Tokyo</option>
+          <option value="Asia/Dubai">Dubai</option>
+          <option value="Australia/Sydney">Sydney</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Weather Widget -->
+    <div class="widget weather-widget glass-panel">
+      <div id="weather-header">
+        <i class="fas fa-cloud-sun weather-icon"></i>
+        <h3>Weather</h3>
+      </div>
+      <div id="weather-content">
+        <div id="weather-temp">--°C</div>
+        <div id="weather-desc">Enter location</div>
+        <div id="weather-details">
+          <div><i class="fas fa-wind"></i> <span id="wind">--</span> km/h</div>
+          <div><i class="fas fa-tint"></i> <span id="humidity">--</span>%</div>
+          <div><i class="fas fa-eye"></i> <span id="visibility">--</span> km</div>
+        </div>
+      </div>
+      <div id="weather-input">
+        <input type="text" id="city-input" placeholder="Enter city..." />
+        <button id="get-weather" class="glass-btn-sm"><i class="fas fa-search"></i></button>
+        <button id="get-location" class="glass-btn-sm" title="Use my location"><i class="fas fa-location-crosshairs"></i></button>
+      </div>
+      <div id="weather-forecast"></div>
+    </div>
+
+    <!-- Calendar Widget -->
+    <div class="widget calendar-widget glass-panel">
+      <div id="calendar-header">
+        <button id="prev-month" class="glass-btn-sm"><i class="fas fa-chevron-left"></i></button>
+        <h3 id="calendar-month">Month Year</h3>
+        <button id="next-month" class="glass-btn-sm"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div id="calendar-weekdays">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div id="calendar-days"></div>
+    </div>
+
+    <!-- Reminders Widget -->
+    <div class="widget reminders-widget glass-panel">
+      <div id="reminders-header">
+        <h3><i class="fas fa-bell"></i> Reminders</h3>
+        <button id="add-reminder-btn" class="glass-btn-sm"><i class="fas fa-plus"></i></button>
+      </div>
+      <div id="reminder-form" class="hidden">
+        <input type="text" id="reminder-text" placeholder="Reminder text..." />
+        <input type="datetime-local" id="reminder-datetime" />
+        <div id="reminder-form-btns">
+          <button id="save-reminder" class="glass-btn-sm"><i class="fas fa-check"></i></button>
+          <button id="cancel-reminder" class="glass-btn-sm"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <div id="reminders-list"></div>
+    </div>
+
+    <!-- Quick Notes Widget -->
+    <div class="widget notes-widget glass-panel">
+      <h3><i class="fas fa-sticky-note"></i> Quick Notes</h3>
+      <textarea id="quick-notes" placeholder="Type your notes here..."></textarea>
+    </div>
+
+    <!-- Stopwatch Widget -->
+    <div class="widget stopwatch-widget glass-panel">
+      <h3><i class="fas fa-stopwatch"></i> Stopwatch</h3>
+      <div id="stopwatch-display">00:00:00.000</div>
+      <div id="stopwatch-controls">
+        <button id="sw-start" class="glass-btn-sm"><i class="fas fa-play"></i></button>
+        <button id="sw-stop" class="glass-btn-sm"><i class="fas fa-pause"></i></button>
+        <button id="sw-reset" class="glass-btn-sm"><i class="fas fa-redo"></i></button>
+        <button id="sw-lap" class="glass-btn-sm"><i class="fas fa-flag"></i></button>
+      </div>
+      <div id="lap-times"></div>
+    </div>
+
+    <!-- World Clocks Widget -->
+    <div class="widget worldclock-widget glass-panel">
+      <h3><i class="fas fa-globe"></i> World Clocks</h3>
+      <div id="world-clocks">
+        <div class="world-clock-item" data-tz="America/New_York">
+          <span class="wc-city">New York</span>
+          <span class="wc-time">--:--</span>
+        </div>
+        <div class="world-clock-item" data-tz="Europe/London">
+          <span class="wc-city">London</span>
+          <span class="wc-time">--:--</span>
+        </div>
+        <div class="world-clock-item" data-tz="Asia/Tokyo">
+          <span class="wc-city">Tokyo</span>
+          <span class="wc-time">--:--</span>
+        </div>
+        <div class="world-clock-item" data-tz="Australia/Sydney">
+          <span class="wc-city">Sydney</span>
+          <span class="wc-time">--:--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="hidden"></div>
+
+  <!-- Audio for reminders -->
+  <audio id="reminder-sound" preload="auto">
+    <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp+al4yCc2lkZW11hZGYmZSMgHZtaGhtdoKOl5qXkod8cWplZm15iJOampiRh3xxamZnbXqGkZiZlpCFenBpZWdseYWRmJmWj4R5cGlmZ2x5hZGYmZaPhHlwaWZnbHmFkZiZlI+EeXBpZmdseYWRmJmUj4R5cGlmZ2x5hZGYmJSPhHlwaWZnbHmFkZiYlI+EeXBpZmdseYWQl5iUj4R5cGlmZ2x5hZCXl5SPhHlwaWZnbHmFkJeXlI+EeXBpZmdseYWQl5eUj4R5cGlmaGx5hZCXl5OOg3lwaWZobHmEkJaXk46DeXBpZmhseYSQlpeTjoN5cGlmaGx5hJCWl5OOg3lwaWZobHmEkJaXk46DeXBpZmhseYSQlpeTjoN5cGlmaGx5hJCWl5OOg3lwaWZobHmEj5WWk42DeG9oZmhsd4SPl5aTjYN4b2hmaGx3hI+XlpONg3hvaGZobHeEj5aWk42DeG9oZmhsd4SPlpaTjYN4b2hmaGx3hI+WlpONg3hvaGZobHeEj5aWk42DeG9oZmhsd4SPlpaTjYN4b2hmaGx3hI+WlpONgnhvaGZobHeEj5aVko2CeG9oZmhsd4OPlZWSjYJ4b2hmaGx3g4+VlZKNgnhvaGZobHeDj5WVko2CeG9oZ2hsd4OPlZWSjYJ4b2hnZ2x3g4+VlZKNgnhvaGdnbHeDj5WVko2CeG9oZ2dsd4OPlZWSjYJ4b2hnZ2x3g4+VlZKMgnhvaGdnbHeDj5WVkoyBeG9oZ2dsd4OPlZWSjIF4b2hnZ2x2g4+VlZKMgXhvaGdna3aDj5WUkoyBeG9oZ2drdoOPlZSSjIF4b2hnZ2t2g4+VlJKMgXhvaGdna3aDjpSUkoyBeG5oZ2drdoOOlJSSi4F4bmhnZ2t2g46UlJKLgXhuaGdna3aDjpSUkouBeG5oZ2drdoOOlJSSi4F4bmhnZ2t2g46Uk5GLgXhuaGdna3aDjpSTkYuBeG5oZ2drdoOOlJORi4F4bmhnaGt2g46Uk5GLgXhuaGdoa3aDjpSTkYuAeG5oZ2hrdoOOlJORi4B4bmhnaGt2g46Uk5GLgHhuaGdoa3aDjpSTkYuAeG5oZ2hrdYOOk5ORi4B4bmhnaGt1g46Tk5CLgHhuaGdoa3WDjpOTkIuAeG5oZ2hrdYOOk5OQi4B4bmhnaGt1g46Tk5CLgHhuaGdoa3WDjpOTkIt/eG5oZ2hrdYOOk5OQi397bmhnaGt1go6Tk5CLf3tuaGdoa3WCjpKSkIt/e25oZ2hrdYKOkpKQi397bmhnaGt1go6SkpCLf3tuaGdoa3WCjpKSkIt/e25oZ2hrdYKOkpKQin97bmhnaGt1go6SkpCKf3tuaGdoa3WCjpKSkIp/e25oZ2hrdYKOkpKQin97bmhnaGt1go6RkZCKf3tuaGdoa3WCjpGRkIp/e25oZ2hqdYKOkZGQin97bmhnaGp1go6RkZCKf3tuaGdoanWCjpGRkIp/e25oZ2hqdYKOkZGPinyAa2VjYmd0goaNjYqHgXluaGVlaXN/h4yMioeBem5oZWVpcn+GjIyKh4F5bmdlZWlyf4aMjIqHgXluZ2VlaXJ/hoyMioeBeW5nZWVpcn+GjIyKh4F5bmdlZWlyf4aMjIqGgXluZ2VlaXJ/hoyMioaBeW5nZWVpcn+GjIyKhoF5bmdlZWlyf4aMjIqGgXluZ2VlaXJ/hoyMioaBeW5nZWVpcn+GjIuKhoF5bmdlZWlyf4aMi4qGgXluZ2VlaXJ/hoyLioaBeW5nZWVpcn+Gi4uKhoF5bmdlZWlyf4aLi4qGgXluZ2VlaHJ/houLioaBeW5nZWVocn+Gi4uJhoB5bWdlZWhyf4aLi4mGgHltZ2VlaHJ/houLiYaAeW1nZWVocn+Gi4uJhoB5bWdlZWhyf4aLi4mGgHltZ2VlaHJ/houKiYaAeW1nZWVocn+Gi4qJhoB5bWdlZWhyfoaLiomGgHltZ2VlaHJ+houKiYWAeW1nZWVocn6Gi4qJhYB5bWdlZWhyfoaLiomFgHltZ2VlaHJ+houKiYWAeW1nZWVocn6Gi4qJhYB5bWdlZWhyfoaKiomFgHltZ2VlaHJ+hoqKiYWAeW1nZWVocn6GioqJhYB5bWdlZWhxfoaKiomFgHltZ2VlaHF+hoqKiYWAeW1nZWVocX6GioqJhYB5bWdlZWhxfoaKiomFgHltZ2VlaHF+hoqKiIV/eW1nZWVocX6GioqIhX95bWdlZWhxfoaKioiFf3ltZ2VlaHF+hoqKiIV/eW1nZWVocX6GioqIhX95bWdlZWhxfoaKioiFf3ltZmVlaHF+hoqJiIV/eW1mZWVocX6GiomIhX95bWZlZWhxfoaKiYiFf3ltZmVlaHF+hoqJiIV/eW1mZWVocX6GiomIhX95bWZlZWhxfoaKiYiFf3ltZmVlaHF+hYqJiIV/eW1mZWVocX6FiomIhX95bWZlZWhxfoWKiYiFf3k=" type="audio/wav" />
+  </audio>
+
   <script src="main.js"></script>
 </body>
 </html>
